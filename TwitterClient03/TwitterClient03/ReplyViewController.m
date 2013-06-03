@@ -28,13 +28,30 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onSingleTap:)];
+    self.singleTap.delegate = self;
+    self.singleTap.numberOfTapsRequired = 1;
+    [self.view addGestureRecognizer:self.singleTap];
     
     self.imageView.image = self.image;
     self.nameView.text = self.name;
-    self.textView.text = self.text;
+    self.textView.text = @"";
 
 }
-
+-(void)onSingleTap:(UITapGestureRecognizer *)recognizer {
+    [self.textView resignFirstResponder];
+}
+-(BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    if (gestureRecognizer == self.singleTap) {
+        // キーボード表示中のみ有効
+        if (self.textView.isFirstResponder) {
+            return YES;
+        } else {
+            return NO;
+        }
+    }
+    return YES;
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -43,7 +60,6 @@
 
 - (IBAction)replyAction:(id)sender {
     ACAccountStore *accountStore = [[ACAccountStore alloc] init];
-    ACAccount *account = [accountStore accountWithIdentifier:self.identifier];
 
     ACAccountType *twitterType =
     [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
